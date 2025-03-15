@@ -1,0 +1,29 @@
+{
+  "name": "docker-android",
+  "version": "1.0.0",
+  "description": "Docker image with endpoint for running tests and getting test results.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prompttosoftware/docker-android.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/prompttosoftware/docker-android/issues"
+  },
+  "homepage": "https://github.com/prompttosoftware/docker-android#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "child_process": "^1.0.2",
+    "docker-android": "file:",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  }
+}
