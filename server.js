@@ -15,7 +15,7 @@ if (!fs.existsSync(resultsDir)) {
 }
 
 app.post('/run-test', (req, res) => {
-  const { repoUrl, branch, testCommand } = req.body;
+  const { repoUrl, branch, testCommand, gradlewPath } = req.body;
   
   if (!repoUrl || !branch || !testCommand) {
     return res.status(400).json({ error: 'Missing required parameters' });
@@ -30,11 +30,13 @@ app.post('/run-test', (req, res) => {
   console.log(`Starting test ${testId} for ${repoUrl} (${branch})`);
   
   // Clone repository
-  exec(`git clone ${repoUrl} ${workDir} && cd ${workDir} && git checkout ${branch}`, (cloneErr) => {
+  exec(`git clone ${repoUrl} ${workDir} && cd ${workDir} && git checkout ${branch} && chmod +x ${gradlewPath}`, (cloneErr) => {
     if (cloneErr) {
       console.error(`Error cloning repository: ${cloneErr}`);
       return res.status(500).json({ error: 'Failed to clone repository', details: cloneErr.message });
     }
+
+    console.log(workDir);
     
     // Execute test command
     exec(testCommand, { cwd: workDir }, (testErr, stdout, stderr) => {

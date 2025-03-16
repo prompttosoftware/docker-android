@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     git \
     wget \
     unzip \
-    openjdk-11-jdk \
+    openjdk-17-jdk \
     nodejs \
     npm \
     libpulse0 \
@@ -26,8 +26,8 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Set up Android SDK
-ENV ANDROID_HOME /opt/android-sdk
-ENV PATH ${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
 
 RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
 WORKDIR ${ANDROID_HOME}/cmdline-tools
@@ -42,19 +42,22 @@ RUN wget https://dl.google.com/android/repository/commandlinetools-linux-7583922
 RUN yes | sdkmanager --licenses
 
 # Install Android components
-RUN sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator" "system-images;android-30;google_apis;x86_64"
+RUN sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "emulator" "system-images;android-30;google_apis;arm64-v8a"
+
+ENV PATH=${PATH}:${ANDROID_HOME}/emulator
 
 # Create an AVD for testing
-RUN echo "no" | avdmanager create avd -n test_avd -k "system-images;android-30;google_apis;x86_64"
+RUN echo "no" | avdmanager create avd -n test_avd -k "system-images;android-30;google_apis;arm64-v8a"
 
 # Set up Node.js app
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN npm install
 COPY . .
 
 # Expose port for Express server
 EXPOSE 3000
 
-# Start the Node.js application
-CMD ["node", "server.js"]
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
